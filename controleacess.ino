@@ -5,15 +5,18 @@
 #include <SPI.h>
 #include <MFRC522.h>
 
-#define buzzer 2
 #define SS_PIN A4
 #define RST_PIN 9
-#define ledPin 7
+#define ledverde 3
+#define ledverme 2
+#define buzzer 4
 
 LiquidCrystal_I2C lcd (0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 MFRC522 mfrc522(SS_PIN, RST_PIN);
 
 void setup(){
+  pinMode(ledverde, OUTPUT);
+  pinMode(ledverme, OUTPUT);
   lcd.begin(16, 2);
   lcd.setBacklight(HIGH);
   lcd.setCursor(1,0);
@@ -42,6 +45,8 @@ void setup(){
 void loop() {
   lerCartao();
   delay(100);
+  digitalWrite(ledverde, LOW);
+  digitalWrite(ledverme, LOW);
 }
 
 void lerCartao(){
@@ -67,57 +72,16 @@ void lerCartao(){
   conteudo.toUpperCase();
   
   if(conteudo.substring(1) == "2D F2 33 CB"){
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Dayvid");
-    delay(2000);
-    Serial.println();
-    Serial.println("Aproxime o seu cartao do leitor...");
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Aguardando...");
-
+    estadoDisplay("dayvid");
   }
   else if(conteudo.substring(1) == "CA 1C 4C 10"){
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Wedson");
-    delay(2000);
-    Serial.println();
-    Serial.println("Aproxime o seu cartao do leitor...");
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Aguardando...");
+    estadoDisplay("wedson");
   }
   else if(conteudo.substring(1) == "4E C0 33 CB"){
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Fernando");
-    delay(2000);
-    Serial.println();
-    Serial.println("Aproxime o seu cartao do leitor...");
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Aguardando...");
+    estadoDisplay("fernando");
   }
   else if(conteudo.substring(1) == "33 7E ED 00"){
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Distomia");
-    delay(2000);
-    Serial.println();
-    Serial.println("Aproxime o seu cartao do leitor...");
-    lcd.clear();
-    lcd.begin(16,2);
-    lcd.setCursor(0,0);
-    lcd.print("Aguardando...");
+    estadoDisplay("leo");
   }
   else{
     lcd.clear();
@@ -125,6 +89,8 @@ void lerCartao(){
     lcd.setCursor(0,0);
     lcd.print("ERROR");
     tone(buzzer, 450);
+    digitalWrite(ledverde, LOW);
+    digitalWrite(ledverme, HIGH);
     delay(1000);
     Serial.println();
     Serial.println("Aproxime o seu cartao do leitor...");
@@ -134,4 +100,20 @@ void lerCartao(){
     lcd.print("Aguardando...");
   }
   noTone(buzzer);
+}
+
+void estadoDisplay(String nome){
+  lcd.clear();
+    lcd.begin(16,2);
+    lcd.setCursor(0,0);
+    lcd.print(nome);
+    digitalWrite(ledverde, HIGH);
+    digitalWrite(ledverme, LOW);
+    delay(2000);
+    Serial.println();
+    Serial.println("Aproxime o seu cartao do leitor...");
+    lcd.clear();
+    lcd.begin(16,2);
+    lcd.setCursor(0,0);
+    lcd.print("Aguardando...");
 }
